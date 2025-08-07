@@ -1,10 +1,16 @@
+import express from 'express';
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).send({ message: 'Método no permitido' });
-  }
+dotenv.config();
 
+const app = express();
+
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Ruta POST para enviar correo
+app.post('/api/contact', async (req, res) => {
   const { email, subject, message } = req.body;
 
   if (!email || !subject || !message) {
@@ -32,4 +38,7 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
-}
+});
+
+// Exportar como handler para Vercel
+export default app;
